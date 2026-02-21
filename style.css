@@ -19,6 +19,15 @@ serif;
   max-width: 300px;
   width: 100%;
 }
+/*HEADER BAR*/
+.header {
+  background-color: rgba(60, 40, 25, 0.75);
+  padding: 20px 25px 22px 25px;
+  /* edge-to-edge */
+  margin: 0;
+  /* lift without floating */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+}
 /* MAIN CONTENT PANEL*/
 
 .content {
