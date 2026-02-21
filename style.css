@@ -15,8 +15,8 @@ serif;
 /*title image*/
 .site-title {
   display: block;
-  margin: 0 auto 30px 0;
-  max-width: 300px;
+  margin: 0 auto 30px auto;
+  max-width: 600px;
   width: 100%;
 }
 /*HEADER BAR*/
@@ -25,6 +25,7 @@ serif;
   padding: 20px 25px 22px 10px;
   /* edge-to-edge */
   margin: 0;
+  text-align: center; 
   /* lift without floating */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
 }
