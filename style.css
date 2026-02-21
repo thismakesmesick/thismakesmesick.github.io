@@ -19,3 +19,13 @@ serif;
   max-width: 550px;
   width: 100%;
 }
+/* header bar */
+.header {
+  background-image: url("header.jpg");
+  background-repeat: repeat-x;     /* classic Y2K */
+  background-position: center;
+  background-size: auto 100%;
+
+  padding: 20px;
+  margin-bottom: 30px;
+}
