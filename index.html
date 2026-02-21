@@ -1,86 +1,63 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
 
-    <!--
-      PAGE TITLE
-      This is what shows in the browser tab / bookmarks.
-      It does NOT control the visible title on the page.
-    -->
-    <title>thismakesmesick</title>
+  <!--
+    HOME PAGE
+    This is the first impression.
+    It is allowed to be quiet, strange, and incomplete.
+  -->
 
-    <!-- MAIN STYLESHEET -->
-    <link rel="stylesheet" href="style.css">
-  </head>
+  <title>—</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-  <body>
+  <main class="page">
 
-    <!-- =====================
-         MIND MAP CANVAS
-         This is the full-screen area that holds the entire layout.
-         Everything is positioned relative to this.
-         ===================== -->
-    <div class="mindmap">
+    <!-- SITE TITLE -->
+    <h1 class="site-title">this is not finished</h1>
 
-      <!-- =====================
-           CENTER NODE (CORE)
-           This is the heart of the site.
-           It represents identity / home / anchor.
-           Everything else radiates from this.
-           ===================== -->
-      <div class="node center-node">
+    <!-- INTRO TEXT -->
+    <div class="block">
+      <p>
+        This site is a container.  
+        Some things live here temporarily.  
+        Some things stay.
+      </p>
 
-        <!--
-          TITLE IMAGE
-          This replaces a traditional header.
-          It lives in the center because this site is radial, not linear.
-        -->
-        <img
-          src="title.png"
-          alt="thismakesmesick"
-          class="site-title"
-        >
-
-      </div>
-
-      <!-- =====================
-           SURROUNDING NODES
-           These are conceptual entry points.
-           They do NOT contain content yet.
-           Later they can link, scroll, or expand.
-           ===================== -->
-
-      <!-- DIARY / WRITING -->
-      <div class="node node-top">
-        diary
-      </div>
-
-      <!-- PROJECTS / WORLDBUILDING -->
-      <div class="node node-right">
-        projects
-      </div>
-
-      <!-- PHOTOS / VISUAL ARCHIVE -->
-      <div class="node node-bottom">
-        photos
-      </div>
-
-      <!-- MOODS / LOGS / TRACKING -->
-      <div class="node node-left">
-        moods
-      </div>
-
+      <p>
+        There is no promise of clarity.
+      </p>
     </div>
 
-    <!--
-      NOTE:
-      There is intentionally NO traditional content section yet.
-      Content will either:
-      - appear below the mind map
-      - or be revealed when nodes are clicked
-      We are designing the spatial logic first.
-    -->
+    <!-- NAVIGATION (INTENTIONALLY LOW-KEY) -->
+    <nav class="nav">
+      <a href="diary.html">diary</a>
+      <a href="archive.html">archive</a>
+    </nav>
 
-  </body>
+    <!-- FLOATING / COLLAGE NOTE -->
+    <div class="note">
+      <p>things overlap when they want to</p>
+    </div>
+
+    <!-- FOOTER WITH HIDDEN LINK -->
+    <footer class="footer">
+      <span>
+        everything drifts
+        <!--
+          THIS IS THE HIDDEN LINK.
+          It looks like punctuation.
+          It is not announced.
+          Only curiosity or accident reveals it.
+        -->
+        <a href="private.html" class="hidden-link">·</a>
+      </span>
+    </footer>
+
+  </main>
+
+</body>
 </html>
