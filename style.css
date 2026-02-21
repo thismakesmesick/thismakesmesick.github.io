@@ -1,138 +1,128 @@
-/* =====================
-   GLOBAL PAGE STYLES
-   Sets the overall vibe and background
-   ===================== */
+/* =========================
+   COLOR PALETTE
+   ========================= */
+:root {
+  --bg: #f3eee7;        /* parchment */
+  --paper: #ebe2d6;     /* soft paper */
+  --text: #3a2e28;      /* dark brown */
+  --accent: #c25a32;    /* terracotta */
+  --green: #6a7b5c;     /* olive */
+}
 
+/* =========================
+   GLOBAL
+   ========================= */
 body {
-  /* Starry / Neocities-style background */
-  background-image: url("background.jpg");
-  background-repeat: repeat;
-  background-size: auto;
-  background-position: top left;
-
   margin: 0;
-  padding: 0;
-
-  color: #111;
-  font-family: Georgia, "Times New Roman", serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Georgia, serif;
+  line-height: 1.6;
 }
 
-
-/* =====================
-   MIND MAP CANVAS
-   Full-screen space that holds all nodes
-   Everything is positioned relative to this
-   ===================== */
-
-.mindmap {
+/* =========================
+   PAGE CONTAINERS
+   ========================= */
+.page {
+  max-width: 760px;
+  margin: 4rem auto;
+  padding: 2.5rem;
+  background: var(--paper);
   position: relative;
-
-  width: 100vw;
-  height: 100vh;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-
-/* =====================
-   BASE NODE STYLES
-   Shared by all nodes (center + surrounding)
-   ===================== */
-
-.node {
-  position: absolute;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 50%;
-  text-align: center;
-
-  /* Slight lift so nodes feel placed, not flat */
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+.page.narrow {
+  max-width: 600px;
 }
 
-
-/* =====================
-   CENTER NODE (CORE)
-   This is the identity / anchor of the site
-   ===================== */
-
-.center-node {
-  width: 260px;
-  height: 260px;
-
-  background-color: rgba(196, 90, 26, 0.9); /* dark orange */
-
-  z-index: 2;
-}
-
-
-/* =====================
-   TITLE IMAGE
-   Lives inside the center node
-   ===================== */
-
+/* =========================
+   TYPOGRAPHY
+   ========================= */
 .site-title {
-  max-width: 200px;
-  width: 100%;
-
-  display: block;
-}
-
-
-/* =====================
-   SURROUNDING NODES
-   Conceptual entry points (not content yet)
-   ===================== */
-
-.node-top,
-.node-right,
-.node-bottom,
-.node-left {
-  width: 130px;
-  height: 130px;
-
-  background-color: rgba(255, 245, 230, 0.9);
-
-  font-size: 14px;
+  color: var(--accent);
   font-weight: normal;
 }
 
-
-/* Individual positioning
-   (deliberately a little uneven for mind-map feel) */
-
-.node-top {
-  top: 12%;
+h1, h2 {
+  font-weight: normal;
 }
 
-.node-right {
-  right: 14%;
+/* =========================
+   BLOCKS & NOTES
+   ========================= */
+.block {
+  margin-bottom: 2rem;
 }
 
-.node-bottom {
-  bottom: 12%;
+.note {
+  position: absolute;
+  right: -40px;
+  top: 120px;
+  width: 160px;
+  font-size: 0.9rem;
+  color: var(--green);
 }
 
-.node-left {
-  left: 14%;
+/* =========================
+   NAVIGATION
+   ========================= */
+.nav a {
+  margin-right: 1rem;
+  color: var(--green);
+  text-decoration: none;
 }
 
+.nav a:hover {
+  color: var(--accent);
+}
 
-/* =====================
-   NOTES FOR FUTURE YOU
-   ===================== */
+/* =========================
+   DIARY
+   ========================= */
+.entry {
+  margin-bottom: 2.5rem;
+}
 
-/*
-  - There is no traditional header or content panel anymore.
-  - The layout is radial, not linear.
-  - JavaScript (later) can:
-      • reposition nodes dynamically
-      • add lines between nodes
-      • make nodes interactive
-  - For now, everything is static and intentional.
-*/
+/* =========================
+   ARCHIVE
+   ========================= */
+.archive {
+  list-style: none;
+  padding: 0;
+}
+
+.archive li {
+  padding: 0.3rem 0;
+}
+
+/* =========================
+   FOOTER & HIDDEN LINK
+   ========================= */
+.footer {
+  margin-top: 4rem;
+  font-size: 0.9rem;
+  color: var(--green);
+}
+
+.hidden-link {
+  text-decoration: none;
+  color: var(--green);
+  margin-left: 0.3rem;
+}
+
+.hidden-link:hover {
+  color: var(--accent);
+}
+
+/* =========================
+   PRIVATE PAGE
+   ========================= */
+.warning {
+  font-style: italic;
+  color: var(--green);
+}
+
+.photo {
+  max-width: 100%;
+  margin-top: 1.5rem;
+}
