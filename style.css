@@ -1,41 +1,138 @@
+/* =====================
+   GLOBAL PAGE STYLES
+   Sets the overall vibe and background
+   ===================== */
+
 body {
-  /*star background*/
-background-image: url("background.jpg");
-background-repeat: repeat;
-background-size: auto;
-background-position: top left;
-  
+  /* Starry / Neocities-style background */
+  background-image: url("background.jpg");
+  background-repeat: repeat;
+  background-size: auto;
+  background-position: top left;
 
-  color:#111;
-  font-family: Georgia, "Times New Roman",
-serif;
   margin: 0;
-  padding: 40px 20px;
+  padding: 0;
+
+  color: #111;
+  font-family: Georgia, "Times New Roman", serif;
 }
-/*title image*/
+
+
+/* =====================
+   MIND MAP CANVAS
+   Full-screen space that holds all nodes
+   Everything is positioned relative to this
+   ===================== */
+
+.mindmap {
+  position: relative;
+
+  width: 100vw;
+  height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* =====================
+   BASE NODE STYLES
+   Shared by all nodes (center + surrounding)
+   ===================== */
+
+.node {
+  position: absolute;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  text-align: center;
+
+  /* Slight lift so nodes feel placed, not flat */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+
+/* =====================
+   CENTER NODE (CORE)
+   This is the identity / anchor of the site
+   ===================== */
+
+.center-node {
+  width: 260px;
+  height: 260px;
+
+  background-color: rgba(196, 90, 26, 0.9); /* dark orange */
+
+  z-index: 2;
+}
+
+
+/* =====================
+   TITLE IMAGE
+   Lives inside the center node
+   ===================== */
+
 .site-title {
-  display: block;
-  margin: 0 auto 30px auto;
-  max-width: 600px;
+  max-width: 200px;
   width: 100%;
-}
-/*HEADER BAR*/
-.header {
-  background-color: rgba(143, 66, 7, 0.85);
-  padding: 20px 25px 22px 10px;
-  /* edge-to-edge */
-  margin: 0;
-  text-align: center; 
-  /* lift without floating */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
-}
-/* MAIN CONTENT PANEL*/
 
-.content {
-  background-color: rgba(255, 245, 230, 0.75);
-  padding: 30px 25px;
+  display: block;
+}
 
-  /* lift without gaps */
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+
+/* =====================
+   SURROUNDING NODES
+   Conceptual entry points (not content yet)
+   ===================== */
+
+.node-top,
+.node-right,
+.node-bottom,
+.node-left {
+  width: 130px;
+  height: 130px;
+
+  background-color: rgba(255, 245, 230, 0.9);
+
+  font-size: 14px;
+  font-weight: normal;
 }
+
+
+/* Individual positioning
+   (deliberately a little uneven for mind-map feel) */
+
+.node-top {
+  top: 12%;
 }
+
+.node-right {
+  right: 14%;
+}
+
+.node-bottom {
+  bottom: 12%;
+}
+
+.node-left {
+  left: 14%;
+}
+
+
+/* =====================
+   NOTES FOR FUTURE YOU
+   ===================== */
+
+/*
+  - There is no traditional header or content panel anymore.
+  - The layout is radial, not linear.
+  - JavaScript (later) can:
+      • reposition nodes dynamically
+      • add lines between nodes
+      • make nodes interactive
+  - For now, everything is static and intentional.
+*/
