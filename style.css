@@ -21,8 +21,8 @@ serif;
 }
 /*HEADER BAR*/
 .header {
-  background-color: rgba(143, 66, 7, 0.95);
-  padding: 20px 25px 22px 25px;
+  background-color: rgba(143, 66, 7, 0.85);
+  padding: 20px 25px 22px 10px;
   /* edge-to-edge */
   margin: 0;
   /* lift without floating */
