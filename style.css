@@ -21,7 +21,7 @@ serif;
 }
 /*HEADER BAR*/
 .header {
-  background-color: rgba(60, 40, 25, 0.75);
+  background-color: rgba(143, 66, 7, 0.95);
   padding: 20px 25px 22px 25px;
   /* edge-to-edge */
   margin: 0;
@@ -31,7 +31,7 @@ serif;
 /* MAIN CONTENT PANEL*/
 
 .content {
-  background-color: rgba(255, 245, 230, 0.95);
+  background-color: rgba(255, 245, 230, 0.75);
   padding: 30px 25px;
 
   /* lift without gaps */
