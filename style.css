@@ -19,9 +19,13 @@ serif;
   max-width: 300px;
   width: 100%;
 }
-/* header bar */
-.header {
-  background-color: #543720; 
-  padding: 20px 20px 25px 20px;
-  margin-bottom: 30px;
+/* MAIN CONTENT PANEL*/
+
+.content {
+  background-color: rgba(255, 245, 230, 0.95);
+  padding: 30px 25px;
+
+  /* lift without gaps */
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
 }
