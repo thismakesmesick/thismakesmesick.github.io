@@ -5,3 +5,9 @@ body {
   margin: 0;
   padding: 40px;
 }
+
+.site-title {
+  display: block;
+  max-width: 300px;
+  margin: 0 0 10px 0;
+}
