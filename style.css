@@ -16,16 +16,12 @@ serif;
 .site-title {
   display: block;
   margin: 0 auto 30px 0;
-  max-width: 550px;
+  max-width: 300px;
   width: 100%;
 }
 /* header bar */
 .header {
-  background-image: url("header.jpg");
-  background-repeat: repeat-x;     /* classic Y2K */
-  background-position: center;
-  background-size: auto 100%;
-
-  padding: 20px;
+  background-color: #543720; 
+  padding: 20px 20px 25px 20px;
   margin-bottom: 30px;
 }
