@@ -2,30 +2,85 @@
 <html>
   <head>
     <meta charset="UTF-8">
+
+    <!--
+      PAGE TITLE
+      This is what shows in the browser tab / bookmarks.
+      It does NOT control the visible title on the page.
+    -->
     <title>thismakesmesick</title>
+
+    <!-- MAIN STYLESHEET -->
     <link rel="stylesheet" href="style.css">
   </head>
 
   <body>
 
-    <!-- MAIN PAGE CONTAINER -->
-    <div class="container">
+    <!-- =====================
+         MIND MAP CANVAS
+         This is the full-screen area that holds the entire layout.
+         Everything is positioned relative to this.
+         ===================== -->
+    <div class="mindmap">
 
-      <!-- HEADER BAR -->
-      <div class="header">
-        <img src="title.png" alt="thismakesmesick" class="site-title">
+      <!-- =====================
+           CENTER NODE (CORE)
+           This is the heart of the site.
+           It represents identity / home / anchor.
+           Everything else radiates from this.
+           ===================== -->
+      <div class="node center-node">
+
+        <!--
+          TITLE IMAGE
+          This replaces a traditional header.
+          It lives in the center because this site is radial, not linear.
+        -->
+        <img
+          src="title.png"
+          alt="thismakesmesick"
+          class="site-title"
+        >
+
       </div>
 
-      <!-- MAIN CONTENT AREA -->
-      <div class="content">
+      <!-- =====================
+           SURROUNDING NODES
+           These are conceptual entry points.
+           They do NOT contain content yet.
+           Later they can link, scroll, or expand.
+           ===================== -->
 
-        <div class="post">
-          <p>This is where posts will go.</p>
-        </div>
+      <!-- DIARY / WRITING -->
+      <div class="node node-top">
+        diary
+      </div>
 
+      <!-- PROJECTS / WORLDBUILDING -->
+      <div class="node node-right">
+        projects
+      </div>
+
+      <!-- PHOTOS / VISUAL ARCHIVE -->
+      <div class="node node-bottom">
+        photos
+      </div>
+
+      <!-- MOODS / LOGS / TRACKING -->
+      <div class="node node-left">
+        moods
       </div>
 
     </div>
+
+    <!--
+      NOTE:
+      There is intentionally NO traditional content section yet.
+      Content will either:
+      - appear below the mind map
+      - or be revealed when nodes are clicked
+      We are designing the spatial logic first.
+    -->
 
   </body>
 </html>
