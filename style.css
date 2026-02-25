@@ -12,6 +12,11 @@ body {
   margin: 0;
   padding: 0;
 }
+.layout {
+  position: relative;
+  width: 700px;
+  margin: 20px auto;
+}
 .spine-title {
   position: fixed;
   top: 50%;
