@@ -19,18 +19,19 @@ body {
 }
 .spine-title {
   position: absolute;
+  left: -48px;          /* distance from image edge */
   top: 50%;
-  left: 0;
 
-  transform: translate(-100%, -50%) rotate(-90deg);
-  transform-origin: right top;
+  transform: translateY(-50%) rotate(-90deg);
+  transform-origin: right center;
 
-  font-family: "Arial Rounded MT Bold", "Trebuchet MS", "Verdana", sans-serif;
+  font-family: "Arial Rounded MT Bold", "Trebuchet MS", Verdana, sans-serif;
   font-size: 48px;
   font-weight: bold;
   letter-spacing: 2px;
 
   color: #1f3cff;
+
   pointer-events: none;
   user-select: none;
 }
@@ -61,10 +62,10 @@ body {
   min-height: 100vh;
 }
 .hero {
-  border: 1px solid #000;
+  position: relative;
+  border: 1px solid rgba(0,0,0,0.35);
   padding: 6px;
-  margin-bottom: 12px;
-  background: #fff;
+  margin-bottom: 16px;
 }
 
 .hero img {
