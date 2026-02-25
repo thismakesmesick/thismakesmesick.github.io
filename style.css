@@ -49,3 +49,12 @@ body {
   font-size: 12px;
   margin-top: 20px;
 }
+.status a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.status a:hover {
+  background: black;
+  color: white;
+}
