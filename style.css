@@ -68,6 +68,7 @@ body {
 .nav a:hover {
   background: #f3d6c4;
   color: inherit;
+  transition: background 0.15s ease;
 }
 
 .text {
