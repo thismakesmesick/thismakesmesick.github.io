@@ -16,13 +16,16 @@ body {
 }
 .hero {
   border: 1px solid #000;
-  padding: 4px;
-  margin-bottom: 10px;
+  padding: 6px;
+  margin-bottom: 12px;
+  background: #fff;
 }
 
 .hero img {
   display: block;
   width: 100%;
+  max-height: 420px;
+  object-fit: cover;
 }
 .nav {
   font-size: 13px;
