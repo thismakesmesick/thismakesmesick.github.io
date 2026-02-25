@@ -2,12 +2,12 @@ body {
   background: #fff;
   color: #000;
   font-family: "Times New Roman", Times, serif;
-  font-size: 17px;
+  font-size: 18px;
   margin: 0;
   padding: 0;
 }
 .status-bar {
-  font-size: 12px;
+  font-size: 14px;
   overflow: hidden;
   white-space: nowrap;
   margin-bottom: 10px;
