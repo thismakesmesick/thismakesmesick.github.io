@@ -1,5 +1,5 @@
 body {
-  background: #fff;
+  background: #F7E3AF;
   color: #000;
   font-family: "Times New Roman", Times, serif;
   font-size: 20px;
@@ -34,10 +34,10 @@ body {
   min-height: 100vh;
 }
 .hero {
-  border: 1px solid #000;
+  border: 1px solid #6494AA;
   padding: 6px;
   margin-bottom: 12px;
-  background: #fff;
+  background: #fdf9ef;
 }
 
 .hero img {
@@ -94,5 +94,15 @@ body {
 .status-bar a:hover {
   background: black;
   color: white;
+}
+.text strong {
+  color: #AA4465;
+}
+.nav a:hover {
+  background: #EF7B45;
+  color: #000;
+}
+.status-bar {
+  color: #5A0002;
 }
 
