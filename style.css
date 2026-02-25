@@ -88,6 +88,7 @@ body {
 }
 
 .text {
+  font-family: "Courier New", Courier, monospace;
   margin-bottom: 16px;
   line-height: 1.45;
 }
