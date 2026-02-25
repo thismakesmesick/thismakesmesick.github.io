@@ -65,11 +65,11 @@ body {
   color: #000;
   text-decoration: underline;
 }
-
 .nav a:hover {
-  background: #000;
-  color: #fff;
+  background: #f3d6c4;
+  color: inherit;
 }
+
 .text {
   margin-bottom: 16px;
   line-height: 1.45;
