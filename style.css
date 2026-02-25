@@ -12,6 +12,22 @@ body {
   margin: 0;
   padding: 0;
 }
+.spine-title {
+  position: fixed;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-family: "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
+
+  font-size: 22px;
+  letter-spacing: 2px;
+
+  color: rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
 .status-bar {
   font-size: 16px;
   overflow: hidden;
@@ -36,7 +52,7 @@ body {
 }
 .page {
   width: 700px;
-  margin: 20px auto;
+  margin: 40px auto;
   min-height: 100vh;
 }
 .hero {
