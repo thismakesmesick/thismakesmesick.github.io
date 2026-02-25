@@ -52,9 +52,13 @@ body {
   max-height: 420px;
   object-fit: cover;
 }
-.nav {
-  font-size: 13px;
-  margin-bottom: 10px;
+  .nav {
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  padding: 10px 12px;
+  margin-bottom: 16px;
+
+  text-align: center;
+  font-size: 16px;
 }
 
 .nav a {
