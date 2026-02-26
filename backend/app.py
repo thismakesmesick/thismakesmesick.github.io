@@ -1,23 +1,101 @@
 import os
 import sqlite3
-from functools import wraps
 from flask import Flask, g, jsonify, render_template_string, request, redirect
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
 
-@app.route("/")
-def home():
-    return {"status": "Journal API running"}
-
 app.config["DATABASE"] = os.getenv("JOURNAL_DB_PATH", "/tmp/journal.db")
 app.config["WRITE_API_KEY"] = os.getenv("WRITE_API_KEY", "change-me")
 
 
+@app.route("/")
+def home():
+    return {"status": "Journal API running"}
+
+
+# -------------------------
+# DATABASE
+# -------------------------
+
+def get_db():
+    if "db" not in g:
+        g.db = sqlite3.connect(app.config["DATABASE"])
+        g.db.row_factory = sqlite3.Row
+    return g.db
+
+
+@app.teardown_appcontext
+def close_db(_error):
+    db = g.pop("db", None)
+    if db:
+        db.close()
+
+
+def init_db():
+    db = sqlite3.connect(app.config["DATABASE"])
+    db.execute(
+        """
+        CREATE TABLE IF NOT EXISTS entries (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            entry_date TEXT NOT NULL,
+            subject TEXT NOT NULL,
+            to_name TEXT NOT NULL,
+            from_name TEXT NOT NULL,
+            body TEXT NOT NULL,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        )
+        """
+    )
+    db.commit()
+    db.close()
+
+
+def serialize_entry(row):
+    return dict(row)
+
+
+# -------------------------
+# PUBLIC API ROUTES
+# -------------------------
+
+@app.route("/api/entries", methods=["GET"])
+def list_entries():
+    rows = get_db().execute(
+        """
+        SELECT id, entry_date, subject, to_name, from_name, body
+        FROM entries
+        ORDER BY entry_date DESC, id DESC
+        """
+    ).fetchall()
+    return jsonify([serialize_entry(r) for r in rows])
+
+
+@app.route("/api/entries/<int:entry_id>", methods=["GET"])
+def get_entry(entry_id):
+    row = get_db().execute(
+        """
+        SELECT id, entry_date, subject, to_name, from_name, body
+        FROM entries
+        WHERE id = ?
+        """,
+        (entry_id,),
+    ).fetchone()
+
+    if not row:
+        return jsonify({"error": "not found"}), 404
+
+    return jsonify(serialize_entry(row))
+
+
+# -------------------------
+# ADMIN HTML TEMPLATE
+# -------------------------
+
 ADMIN_COMPOSE_TEMPLATE = """
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
   <title>Compose Journal Entry</title>
@@ -33,7 +111,7 @@ ADMIN_COMPOSE_TEMPLATE = """
       margin: 0 auto;
     }
     .email-card {
-      border: 1px solid rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(0,0,0,0.25);
       padding: 16px;
       background: #fff;
     }
@@ -106,65 +184,11 @@ ADMIN_COMPOSE_TEMPLATE = """
 """
 
 
-def get_db():
-    if "db" not in g:
-        g.db = sqlite3.connect(app.config["DATABASE"])
-        g.db.row_factory = sqlite3.Row
-    return g.db
+# -------------------------
+# ADMIN ROUTES
+# -------------------------
 
-
-@app.teardown_appcontext
-def close_db(_error):
-    db = g.pop("db", None)
-    if db:
-        db.close()
-
-
-def init_db():
-    db = sqlite3.connect(app.config["DATABASE"])
-    db.execute(
-        """
-        CREATE TABLE IF NOT EXISTS entries (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            entry_date TEXT NOT NULL,
-            subject TEXT NOT NULL,
-            to_name TEXT NOT NULL,
-            from_name TEXT NOT NULL,
-            body TEXT NOT NULL,
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP
-        )
-        """
-    )
-    db.commit()
-    db.close()
-
-
-def serialize_entry(row):
-    return dict(row)
-
-
-@app.route("/api/entries", methods=["GET"])
-def list_entries():
-    rows = get_db().execute(
-        "SELECT id, entry_date, subject, to_name, from_name, body FROM entries ORDER BY entry_date DESC, id DESC"
-    ).fetchall()
-    return jsonify([serialize_entry(r) for r in rows])
-
-
-@app.route("/api/entries/<int:entry_id>", methods=["GET"])
-def get_entry(entry_id):
-    row = get_db().execute(
-        "SELECT id, entry_date, subject, to_name, from_name, body FROM entries WHERE id = ?",
-        (entry_id,),
-    ).fetchone()
-
-    if not row:
-        return jsonify({"error": "not found"}), 404
-
-    return jsonify(serialize_entry(row))
-
-
-@app.route("/admin-login", methods=["POST"])
+@app.route("/admin-login", methods=["POST"], strict_slashes=False)
 def admin_login():
     data = request.get_json(silent=True) or {}
     password = data.get("password", "")
@@ -175,7 +199,7 @@ def admin_login():
     return render_template_string(ADMIN_COMPOSE_TEMPLATE, password=password)
 
 
-@app.route("/admin-create-entry", methods=["POST"])
+@app.route("/admin-create-entry", methods=["POST"], strict_slashes=False)
 def admin_create_entry():
     password = request.form.get("password", "")
 
@@ -198,7 +222,7 @@ def admin_create_entry():
     )
     db.commit()
 
-    # 🔥 Redirect back to your journal page
+    # Redirect back to journal page
     return redirect("https://thismakesmesick.github.io/journal.html")
 
 
