@@ -166,6 +166,65 @@
     .journal-page .journal-entry-full {
       display: none;
     }
+
+    .journal-page .journal-interrupt-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 2147483646;
+      display: none;
+      pointer-events: auto;
+    }
+
+    .journal-page .journal-interrupt-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(460px, calc(100vw - 36px));
+      border: 1px solid rgba(0, 0, 0, 0.5);
+      background: #fff;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+      padding: 18px;
+      z-index: 2147483647;
+      display: none;
+    }
+
+    .journal-page .journal-interrupt-title {
+      margin: 0 0 10px;
+      font-size: 20px;
+    }
+
+    .journal-page .journal-interrupt-message {
+      margin: 0 0 16px;
+      line-height: 1.4;
+      white-space: pre-line;
+    }
+
+    .journal-page .journal-interrupt-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .journal-page .journal-interrupt-button {
+      border: 1px solid rgba(0, 0, 0, 0.35);
+      background: #f6f6f4;
+      font: inherit;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+
+    .journal-page .journal-interrupt-button:hover,
+    .journal-page .journal-interrupt-button:focus-visible {
+      background: #f3d6c4;
+      outline: none;
+    }
+
+    .journal-page .journal-interrupt-overlay.is-visible,
+    .journal-page .journal-interrupt-modal.is-visible {
+      display: block;
+    }
   </style>
 </head>
 <body class="journal-page">
@@ -271,6 +330,15 @@
   </section>
 
   <div class="journal-window-layer" id="journalWindowLayer" aria-live="polite"></div>
+  <div class="journal-interrupt-overlay" id="journalInterruptOverlay" aria-hidden="true"></div>
+  <section class="journal-interrupt-modal" id="journalInterruptModal" role="alertdialog" aria-modal="true" aria-labelledby="journalInterruptTitle" aria-describedby="journalInterruptMessage" aria-hidden="true">
+    <h2 class="journal-interrupt-title" id="journalInterruptTitle">global interrupt</h2>
+    <p class="journal-interrupt-message" id="journalInterruptMessage"></p>
+    <div class="journal-interrupt-actions">
+      <button class="journal-interrupt-button" id="journalInterruptContinue" type="button">continue</button>
+      <button class="journal-interrupt-button" id="journalInterruptCrash" type="button">crash</button>
+    </div>
+  </section>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -284,10 +352,42 @@
         });
 
       const windowLayer = document.getElementById("journalWindowLayer");
+      const interruptOverlay = document.getElementById("journalInterruptOverlay");
+      const interruptModal = document.getElementById("journalInterruptModal");
+      const interruptMessage = document.getElementById("journalInterruptMessage");
+      const continueButton = document.getElementById("journalInterruptContinue");
+      const crashButton = document.getElementById("journalInterruptCrash");
       const entryButtons = document.querySelectorAll(".journal-entry-button");
       const clearAllButton = document.getElementById("clearAllPopups");
       let zIndexCounter = 2000;
       let openCount = 0;
+      let interruptVisible = false;
+
+      const snarkyMessages = [
+        "Congratulations. You've opened enough feelings to trigger maintenance mode.",
+        "System notice: your coping mechanism quota has been exceeded.",
+        "Another popup? Incredible commitment to emotional chaos.",
+        "You appear determined to speedrun bad decisions. Carry on.",
+        "This is your reminder that overthinking is not a productivity tool."
+      ];
+
+      const showInterrupt = () => {
+        const randomMessage = snarkyMessages[Math.floor(Math.random() * snarkyMessages.length)];
+        interruptMessage.textContent = randomMessage;
+        interruptOverlay.classList.add("is-visible");
+        interruptModal.classList.add("is-visible");
+        interruptOverlay.setAttribute("aria-hidden", "false");
+        interruptModal.setAttribute("aria-hidden", "false");
+        interruptVisible = true;
+      };
+
+      const hideInterrupt = () => {
+        interruptOverlay.classList.remove("is-visible");
+        interruptModal.classList.remove("is-visible");
+        interruptOverlay.setAttribute("aria-hidden", "true");
+        interruptModal.setAttribute("aria-hidden", "true");
+        interruptVisible = false;
+      };
 
       const bringToFront = (popup) => {
         zIndexCounter += 1;
@@ -378,10 +478,18 @@
         popup.addEventListener("pointerdown", () => bringToFront(popup));
         closeButton.addEventListener("click", () => closePopup(popup));
         makeDraggable(popup, header);
+
+        if (openCount % 10 === 0) {
+          showInterrupt();
+        }
       };
 
       entryButtons.forEach((button) => {
         button.addEventListener("click", () => {
+          if (interruptVisible) {
+            return;
+          }
+
           const entry = document.getElementById(button.dataset.entryId);
           if (!entry) {
             return;
@@ -393,8 +501,16 @@
       });
 
       clearAllButton.addEventListener("click", clearAllPopups);
+      continueButton.addEventListener("click", hideInterrupt);
+      crashButton.addEventListener("click", () => {
+        window.location.href = "index.html";
+      });
 
       document.addEventListener("keydown", (event) => {
+        if (interruptVisible) {
+          return;
+        }
+
         if (event.key !== "Escape") {
           return;
         }
