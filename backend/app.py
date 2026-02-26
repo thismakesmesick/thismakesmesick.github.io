@@ -195,6 +195,38 @@ def admin_login():
 </body>
 </html>
 """
+    @app.route("/admin-create-entry", methods=["POST"])
+def admin_create_entry():
+    # Extract form data
+    entry_date = request.form.get("entry_date")
+    to_name = request.form.get("to_name")
+    from_name = request.form.get("from_name")
+    subject = request.form.get("subject")
+    body = request.form.get("body")
+
+    # Basic validation
+    if not all([entry_date, to_name, from_name, subject, body]):
+        return "missing fields", 400
+
+    # Insert into database
+    db = get_db()
+    db.execute(
+        """
+        INSERT INTO entries (entry_date, subject, to_name, from_name, body)
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (entry_date, subject, to_name, from_name, body),
+    )
+    db.commit()
+
+    return """
+    <html>
+    <body>
+      <p>entry created.</p>
+      <a href="/admin-login">back</a>
+    </body>
+    </html>
+    """
 init_db()
 
 if __name__ == "__main__":
