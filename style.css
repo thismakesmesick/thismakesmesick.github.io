@@ -23,7 +23,10 @@ body {
   white-space: nowrap;
   margin-bottom: 14px;
 }
-
+.status-bar a:hover {
+  background: #f3d6c4;
+  color: inherit;
+}
 .marquee {
   width: 100%;
   overflow: hidden;
