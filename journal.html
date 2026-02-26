@@ -449,10 +449,18 @@
         popup.appendChild(body);
         windowLayer.appendChild(popup);
 
-        const offset = ((openCount - 1) % 8) * 24;
-        popup.style.left = `${60 + offset}px`;
-        popup.style.top = `${80 + offset}px`;
-        bringToFront(popup);
+        // !*Random position within viewport*//
+const maxLeft = window.innerWidth - popup.offsetWidth - 40;
+const maxTop = window.innerHeight - popup.offsetHeight - 40;
+
+const randomLeft = Math.max(20, Math.random() * maxLeft);
+const randomTop = Math.max(20, Math.random() * maxTop);
+const randomRotation = (Math.random() * 6 - 3); 
+popup.style.transform = `rotate(${randomRotation}deg)`;
+popup.style.left = `${randomLeft}px`;
+popup.style.top = `${randomTop}px`;
+
+bringToFront(popup);
 
         popup.addEventListener("pointerdown", () => bringToFront(popup));
         closeButton.addEventListener("click", () => closePopup(popup));
