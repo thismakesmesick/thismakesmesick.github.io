@@ -35,14 +35,7 @@ body {
   padding-left: 100%;
   animation: scroll-left 40s linear infinite;
 }
-.marquee a:hover {
-  background: #f3d6c4;
-  color: inherit;
-  transition: background 0.15s ease
-.status {
-  font-size: 12px;
-  margin-bottom: 8px;
-}
+
 .page {
   width: 100%;
   min-height: 100vh;
