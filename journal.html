@@ -198,6 +198,7 @@
       display: none;
     }
 
+    
     .journal-page .journal-interrupt-overlay {
       position: fixed;
       inset: 0;
@@ -256,6 +257,95 @@
     .journal-page .journal-interrupt-modal.is-visible {
       display: block;
     }
+    .journal-page .journal-admin-trigger {
+      position: fixed;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 0, 0, 0.35);
+      background: #f6f6f4;
+      font: inherit;
+      color: inherit;
+      cursor: pointer;
+      z-index: 2147483648;
+    }
+
+    .journal-page .journal-admin-trigger:hover,
+    .journal-page .journal-admin-trigger:focus-visible {
+      background: #f3d6c4;
+      outline: none;
+    }
+
+    .journal-page .journal-admin-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 2147483649;
+      display: none;
+    }
+
+    .journal-page .journal-admin-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(400px, calc(100vw - 32px));
+      border: 1px solid rgba(0, 0, 0, 0.5);
+      background: #fff;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+      padding: 16px;
+      z-index: 2147483650;
+      display: none;
+    }
+
+    .journal-page .journal-admin-modal p {
+      margin: 0 0 12px;
+    }
+
+    .journal-page .journal-admin-input {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid rgba(0, 0, 0, 0.35);
+      background: #fff;
+      padding: 6px 10px;
+      font: inherit;
+      color: inherit;
+      margin-bottom: 8px;
+    }
+
+    .journal-page .journal-admin-error {
+      min-height: 1.2em;
+      margin: 0 0 12px;
+      color: #8a1e1e;
+    }
+
+    .journal-page .journal-admin-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .journal-page .journal-admin-button {
+      border: 1px solid rgba(0, 0, 0, 0.35);
+      background: #f6f6f4;
+      font: inherit;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+
+    .journal-page .journal-admin-button:hover,
+    .journal-page .journal-admin-button:focus-visible {
+      background: #f3d6c4;
+      outline: none;
+    }
+
+    .journal-page .journal-admin-overlay.is-visible,
+    .journal-page .journal-admin-modal.is-visible {
+      display: block;
+    }
   </style>
 </head>
 <body class="journal-page">
@@ -301,6 +391,18 @@
     </div>
   </section>
 
+  <button class="journal-admin-trigger" id="journalAdminTrigger" type="button" aria-haspopup="dialog" aria-controls="journalAdminModal" aria-expanded="false">+</button>
+  <div class="journal-admin-overlay" id="journalAdminOverlay" aria-hidden="true"></div>
+  <section class="journal-admin-modal" id="journalAdminModal" role="dialog" aria-modal="true" aria-labelledby="journalAdminPrompt" aria-hidden="true">
+    <p id="journalAdminPrompt">hello me! password?</p>
+    <input class="journal-admin-input" id="journalAdminPassword" type="password" aria-label="Password">
+    <p class="journal-admin-error" id="journalAdminError" role="status" aria-live="polite"></p>
+    <div class="journal-admin-actions">
+      <button class="journal-admin-button" id="journalAdminSubmit" type="button">submit</button>
+      <button class="journal-admin-button" id="journalAdminCancel" type="button">cancel</button>
+    </div>
+  </section>
+
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       fetch("header.html")
@@ -323,13 +425,21 @@
       const clearSearchButton = document.getElementById("clearSearch");
       const dateInput = document.getElementById("searchDate");
       const keywordInput = document.getElementById("searchKeyword");
+      const adminTrigger = document.getElementById("journalAdminTrigger");
+      const adminOverlay = document.getElementById("journalAdminOverlay");
+      const adminModal = document.getElementById("journalAdminModal");
+      const adminPasswordInput = document.getElementById("journalAdminPassword");
+      const adminSubmitButton = document.getElementById("journalAdminSubmit");
+      const adminCancelButton = document.getElementById("journalAdminCancel");
+      const adminErrorText = document.getElementById("journalAdminError");
       const entriesList = document.getElementById("journalEntries");
       const statusText = document.getElementById("journalStatus");
       const entryTemplate = document.getElementById("entryTemplate");
       let zIndexCounter = 2000;
       let openCount = 0;
       let interruptVisible = false;
-
+let adminModalVisible = false;
+      
       const snarkyMessages = [
         "congrats, you found maintenance mode",
         "are you my mother?",
@@ -354,6 +464,57 @@
         interruptOverlay.setAttribute("aria-hidden", "true");
         interruptModal.setAttribute("aria-hidden", "true");
         interruptVisible = false;
+      };
+
+       const openAdminModal = () => {
+        adminErrorText.textContent = "";
+        adminPasswordInput.value = "";
+        adminOverlay.classList.add("is-visible");
+        adminModal.classList.add("is-visible");
+        adminOverlay.setAttribute("aria-hidden", "false");
+        adminModal.setAttribute("aria-hidden", "false");
+        adminTrigger.setAttribute("aria-expanded", "true");
+        document.body.style.overflow = "hidden";
+        adminModalVisible = true;
+        adminPasswordInput.focus();
+      };
+
+      const closeAdminModal = () => {
+        adminOverlay.classList.remove("is-visible");
+        adminModal.classList.remove("is-visible");
+        adminOverlay.setAttribute("aria-hidden", "true");
+        adminModal.setAttribute("aria-hidden", "true");
+        adminTrigger.setAttribute("aria-expanded", "false");
+        document.body.style.overflow = "";
+        adminModalVisible = false;
+      };
+
+      const submitAdminPassword = async () => {
+        adminErrorText.textContent = "";
+
+        try {
+          const response = await fetch("https://thismakesmesick-github-io.onrender.com/admin-login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ password: adminPasswordInput.value })
+          });
+
+          if (response.status === 200) {
+            window.location.href = "https://thismakesmesick-github-io.onrender.com/admin-panel";
+            return;
+          }
+
+          if (response.status === 401) {
+            adminErrorText.textContent = "nope.";
+            return;
+          }
+
+          adminErrorText.textContent = "nope.";
+        } catch (error) {
+          adminErrorText.textContent = "nope.";
+        }
       };
 
       const bringToFront = (popup) => {
@@ -560,8 +721,22 @@ bringToFront(popup);
 
       dateInput.addEventListener("change", fetchEntries);
       keywordInput.addEventListener("input", fetchEntries);
-
+  adminTrigger.addEventListener("click", openAdminModal);
+      adminCancelButton.addEventListener("click", closeAdminModal);
+      adminSubmitButton.addEventListener("click", submitAdminPassword);
+      adminPasswordInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          submitAdminPassword();
+        }
+      });
+      
       document.addEventListener("keydown", (event) => {
+        if (adminModalVisible && event.key === "Escape") {
+          closeAdminModal();
+          return;
+        }
+
         if (interruptVisible) {
           return;
         }
