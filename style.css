@@ -1,3 +1,4 @@
+/*dashboard coding*/
 body {
   background-color: #f6f6f4;
   background-image: radial-gradient(
@@ -107,4 +108,20 @@ a {
 .squiggle {
   margin: 18px 0;
   color: rgba(0, 0, 0, 0.35);
+}
+/*journal coding*/
+.journal-entry h2 {
+  font-size: 22px;
+  font-weight: normal;
+  margin-bottom: 8px;
+}
+
+.journal-date {
+  font-size: 14px;
+  opacity: 0.7;
+  margin-bottom: 16px;
+}
+
+.journal-entry p {
+  margin-bottom: 14px;
 }
