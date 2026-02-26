@@ -125,3 +125,10 @@ a {
 .journal-entry p {
   margin-bottom: 14px;
 }
+/* journal layout */
+
+.journal-layout {
+  display: grid;
+  grid-template-columns: 180px 1fr 180px;
+  gap: 16px;
+}
