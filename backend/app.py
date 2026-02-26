@@ -11,8 +11,7 @@ def home():
 app.config["DATABASE"] = os.getenv("JOURNAL_DB_PATH", "/tmp/journal.db")
 app.config["WRITE_API_KEY"] = os.getenv("WRITE_API_KEY", "change-me")
 
-cors_origins = [origin.strip() for origin in os.getenv("CORS_ORIGINS", "*").split(",") if origin.strip()]
-CORS(app, resources={r"/api/*": {"origins": cors_origins or "*"}})
+CORS(app)
 
 
 def get_db():
