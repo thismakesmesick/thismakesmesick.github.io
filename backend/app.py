@@ -152,7 +152,9 @@ ADMIN_COMPOSE_TEMPLATE = """
 </head>
 <body>
   <main class="compose-wrap">
-    <form method="POST" action="/admin-create-entry" class="email-card">
+    <form method="POST"
+          action="https://thismakesmesick-github-io.onrender.com/admin-create-entry"
+          class="email-card">
       <div class="email-row">
         <label>Date</label>
         <input type="date" name="entry_date" required>
@@ -188,7 +190,7 @@ ADMIN_COMPOSE_TEMPLATE = """
 # ADMIN ROUTES
 # -------------------------
 
-@app.route("/admin-login", methods=["POST"], strict_slashes=False)
+@app.route("/admin-login", methods=["POST"])
 def admin_login():
     data = request.get_json(silent=True) or {}
     password = data.get("password", "")
@@ -199,7 +201,7 @@ def admin_login():
     return render_template_string(ADMIN_COMPOSE_TEMPLATE, password=password)
 
 
-@app.route("/admin-create-entry", methods=["POST"], strict_slashes=False)
+@app.route("/admin-create-entry", methods=["POST"])
 def admin_create_entry():
     password = request.form.get("password", "")
 
@@ -222,7 +224,6 @@ def admin_create_entry():
     )
     db.commit()
 
-    # Redirect back to journal page
     return redirect("https://thismakesmesick.github.io/journal.html")
 
 
