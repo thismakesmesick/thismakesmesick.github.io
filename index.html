@@ -55,5 +55,18 @@
 
   </div>
 
+      <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      fetch("header.html")
+        .then((response) => response.text())
+        .then((html) => {
+          const headerContainer = document.getElementById("site-header");
+          if (headerContainer) {
+            headerContainer.innerHTML = html;
+          }
+        });
+    });
+  </script>
+
 </body>
 </html>
