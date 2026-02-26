@@ -1,17 +1,168 @@
 import os
 import sqlite3
 from functools import wraps
-from flask import Flask, g, jsonify, request
-from flask_cors import CORS
+
+from flask import Flask, g, jsonify, render_template_string, request
 
 app = Flask(__name__)
+
+
 @app.route("/")
 def home():
     return {"status": "Journal API running"}
+
+
 app.config["DATABASE"] = os.getenv("JOURNAL_DB_PATH", "/tmp/journal.db")
 app.config["WRITE_API_KEY"] = os.getenv("WRITE_API_KEY", "change-me")
 
-CORS(app)
+
+@app.after_request
+def add_cors_headers(response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, X-API-Key"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+    return response
+
+
+ADMIN_COMPOSE_TEMPLATE = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Compose</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 24px;
+      background: #f6f6f4;
+      color: #1a1a1a;
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    .compose-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .status {
+      margin: 0 0 12px;
+      padding: 10px 12px;
+      border: 1px solid rgba(0, 0, 0, 0.25);
+      background: #f3d6c4;
+      font-size: 16px;
+    }
+
+    .email-card {
+      border: 1px solid rgba(0, 0, 0, 0.25);
+      padding: 16px;
+      font-size: 18px;
+      line-height: 1.4;
+      background: #fff;
+    }
+
+    .email-row {
+      margin: 0 0 10px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .email-row label {
+      width: 88px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    input, textarea, button {
+      font: inherit;
+      color: inherit;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    textarea {
+      width: 100%;
+      border: 1px solid rgba(0, 0, 0, 0.35);
+      padding: 8px;
+      background: #fff;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      min-height: 220px;
+      resize: vertical;
+      line-height: 1.4;
+    }
+
+    .email-body {
+      margin-top: 14px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(0, 0, 0, 0.2);
+    }
+
+    .actions {
+      margin-top: 16px;
+    }
+
+    button {
+      border: 1px solid rgba(0, 0, 0, 0.35);
+      background: #f6f6f4;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    button:hover,
+    button:focus-visible {
+      background: #f3d6c4;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <main class="compose-wrap">
+    {% if status_message %}
+      <p class="status">{{ status_message }}</p>
+    {% endif %}
+
+    <form method="POST" action="/admin-create-entry" class="email-card">
+      <div class="email-row">
+        <label for="entry_date">Date</label>
+        <input id="entry_date" type="date" name="entry_date" value="{{ values.entry_date }}" required>
+      </div>
+
+      <div class="email-row">
+        <label for="to_name">To</label>
+        <input id="to_name" type="text" name="to_name" value="{{ values.to_name }}" required>
+      </div>
+
+      <div class="email-row">
+        <label for="from_name">From</label>
+        <input id="from_name" type="text" name="from_name" value="{{ values.from_name }}" required>
+      </div>
+
+      <div class="email-row">
+        <label for="subject">Subject</label>
+        <input id="subject" type="text" name="subject" value="{{ values.subject }}" required>
+      </div>
+
+      <div class="email-body">
+        <div class="email-row" style="align-items:flex-start;">
+          <label for="body">Body</label>
+          <textarea id="body" name="body" required>{{ values.body }}</textarea>
+        </div>
+      </div>
+
+      <input type="hidden" name="password" value="{{ password }}">
+
+      <div class="actions">
+        <button type="submit">Create Entry</button>
+      </div>
+    </form>
+  </main>
+</body>
+</html>
+"""
 
 
 def get_db():
@@ -83,6 +234,23 @@ def require_api_key(func):
     return wrapper
 
 
+def render_admin_compose_form(password, status_message=None, values=None):
+    values = values or {}
+    form_values = {
+        "entry_date": values.get("entry_date", ""),
+        "to_name": values.get("to_name", ""),
+        "from_name": values.get("from_name", ""),
+        "subject": values.get("subject", ""),
+        "body": values.get("body", ""),
+    }
+    return render_template_string(
+        ADMIN_COMPOSE_TEMPLATE,
+        password=password,
+        status_message=status_message,
+        values=form_values,
+    )
+
+
 @app.route("/api/entries", methods=["GET"])
 def list_entries():
     rows = get_db().execute(
@@ -150,65 +318,48 @@ def create_entry():
 def update_or_delete_entry(entry_id):
     return jsonify({"error": "write endpoints reserved for backend admin tooling", "id": entry_id}), 501
 
-from flask import render_template_string
 
 @app.route("/admin-login", methods=["POST"])
 def admin_login():
-    data = request.get_json()
-    if not data or "password" not in data:
+    payload = request.get_json(silent=True) or {}
+    password = payload.get("password", "")
+
+    if not password:
         return jsonify({"error": "missing password"}), 400
 
-    if data["password"] != app.config["WRITE_API_KEY"]:
+    if password != app.config["WRITE_API_KEY"]:
         return jsonify({"error": "unauthorized"}), 401
 
-    return """
-<!DOCTYPE html>
-<html>
-<head>
-  <title>admin</title>
-</head>
-<body>
-  <h1>compose journal entry</h1>
-  <form method="POST" action="/admin-create-entry">
-    <label>Date:<br>
-      <input type="date" name="entry_date" required>
-    </label><br><br>
+    return render_admin_compose_form(password=password)
 
-    <label>To:<br>
-      <input type="text" name="to_name" required>
-    </label><br><br>
 
-    <label>From:<br>
-      <input type="text" name="from_name" required>
-    </label><br><br>
-
-    <label>Subject:<br>
-      <input type="text" name="subject" required>
-    </label><br><br>
-
-    <label>Body:<br>
-      <textarea name="body" rows="10" cols="50" required></textarea>
-    </label><br><br>
-
-    <button type="submit">create entry</button>
-  </form>
-</body>
-</html>
-"""
-    @app.route("/admin-create-entry", methods=["POST"])
+@app.route("/admin-create-entry", methods=["POST"])
 def admin_create_entry():
-    # Extract form data
-    entry_date = request.form.get("entry_date")
-    to_name = request.form.get("to_name")
-    from_name = request.form.get("from_name")
-    subject = request.form.get("subject")
-    body = request.form.get("body")
+    password = request.form.get("password", "")
+    if password != app.config["WRITE_API_KEY"]:
+        return jsonify({"error": "unauthorized"}), 401
 
-    # Basic validation
-    if not all([entry_date, to_name, from_name, subject, body]):
-        return "missing fields", 400
+    entry_date = request.form.get("entry_date", "").strip()
+    to_name = request.form.get("to_name", "").strip()
+    from_name = request.form.get("from_name", "").strip()
+    subject = request.form.get("subject", "").strip()
+    body = request.form.get("body", "").strip()
 
-    # Insert into database
+    form_values = {
+        "entry_date": entry_date,
+        "to_name": to_name,
+        "from_name": from_name,
+        "subject": subject,
+        "body": body,
+    }
+
+    if not all(form_values.values()):
+        return render_admin_compose_form(
+            password=password,
+            status_message="Please fill in all fields before submitting.",
+            values=form_values,
+        ), 400
+
     db = get_db()
     db.execute(
         """
@@ -219,14 +370,12 @@ def admin_create_entry():
     )
     db.commit()
 
-    return """
-    <html>
-    <body>
-      <p>entry created.</p>
-      <a href="/admin-login">back</a>
-    </body>
-    </html>
-    """
+    return render_admin_compose_form(
+        password=password,
+        status_message="Entry created successfully.",
+    )
+
+
 init_db()
 
 if __name__ == "__main__":
