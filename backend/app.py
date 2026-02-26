@@ -161,7 +161,40 @@ def admin_login():
     if data["password"] != app.config["WRITE_API_KEY"]:
         return jsonify({"error": "unauthorized"}), 401
 
-    return jsonify({"success": True}), 200
+    return """
+<!DOCTYPE html>
+<html>
+<head>
+  <title>admin</title>
+</head>
+<body>
+  <h1>compose journal entry</h1>
+  <form method="POST" action="/admin-create-entry">
+    <label>Date:<br>
+      <input type="date" name="entry_date" required>
+    </label><br><br>
+
+    <label>To:<br>
+      <input type="text" name="to_name" required>
+    </label><br><br>
+
+    <label>From:<br>
+      <input type="text" name="from_name" required>
+    </label><br><br>
+
+    <label>Subject:<br>
+      <input type="text" name="subject" required>
+    </label><br><br>
+
+    <label>Body:<br>
+      <textarea name="body" rows="10" cols="50" required></textarea>
+    </label><br><br>
+
+    <button type="submit">create entry</button>
+  </form>
+</body>
+</html>
+"""
 init_db()
 
 if __name__ == "__main__":
