@@ -149,3 +149,14 @@ a {
 .journal-log li {
   margin-bottom: 8px;
 }
+.journal-current {
+  border: 1px solid rgba(0,0,0,0.35);
+  padding: 12px;
+  min-height: 60vh;
+}
+
+.journal-side {
+  border: 1px solid rgba(0,0,0,0.35);
+  padding: 8px;
+  font-size: 14px;
+}
