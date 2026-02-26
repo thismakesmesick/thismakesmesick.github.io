@@ -84,10 +84,6 @@ body {
   font-size: 12px;
   margin-top: 20px;
 }
-.status a {
-  color: inherit;
-  text-decoration: underline;
-}
 
 .status a:hover {
   background: black;
@@ -102,15 +98,7 @@ body {
     transform: translateX(-100%);
   }
 }
-.status-bar a {
-  color: inherit;
-  text-decoration: underline;
-}
 
-.status-bar a:hover {
-  background: black;
-  color: white;
-}
 
 .squiggle {
   margin: 18px 0;
