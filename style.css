@@ -17,24 +17,6 @@ body {
   width: 700px;
   margin: 20px auto;
 }
-.spine-title {
-  position: absolute;
-  left: -48px;          /* distance from image edge */
-  top: 50%;
-
-  transform: translateY(-50%) rotate(-90deg);
-  transform-origin: right center;
-
-  font-family: "Arial Rounded MT Bold", "Trebuchet MS", Verdana, sans-serif;
-  font-size: 48px;
-  font-weight: bold;
-  letter-spacing: 2px;
-
-  color: #1f3cff;
-
-  pointer-events: none;
-  user-select: none;
-}
 .status-bar {
   font-size: 16px;
   overflow: hidden;
