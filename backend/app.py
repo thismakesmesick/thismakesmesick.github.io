@@ -151,7 +151,18 @@ def create_entry():
 def update_or_delete_entry(entry_id):
     return jsonify({"error": "write endpoints reserved for backend admin tooling", "id": entry_id}), 501
 
+from flask import render_template_string
 
+@app.route("/admin-login", methods=["POST"])
+def admin_login():
+    data = request.get_json()
+    if not data or "password" not in data:
+        return jsonify({"error": "missing password"}), 400
+
+    if data["password"] != app.config["WRITE_API_KEY"]:
+        return jsonify({"error": "unauthorized"}), 401
+
+    return jsonify({"success": True}), 200
 init_db()
 
 if __name__ == "__main__":
