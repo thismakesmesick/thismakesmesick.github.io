@@ -265,19 +265,18 @@
       display: block;
     }
     .journal-page .journal-admin-trigger {
-      position: fixed;
-      right: 24px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      padding: 0;
       border: 1px solid rgba(0, 0, 0, 0.35);
       background: #f6f6f4;
       font: inherit;
       color: inherit;
       cursor: pointer;
-      z-index: 2147483648;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
     }
 
     .journal-page .journal-admin-trigger:hover,
@@ -368,7 +367,10 @@
         <div class="journal-search" aria-label="Search journal entries">
           <input class="journal-search-date" id="searchDate" type="date" aria-label="Search by date">
           <input class="journal-search-keyword" id="searchKeyword" type="search" placeholder="search by keyword" aria-label="Search by keyword">
-          <button class="journal-control-button" id="clearSearch" type="button">clear search</button>
+          <div class="journal-search-actions">
+            <button class="journal-admin-trigger" id="journalAdminTrigger" type="button" aria-haspopup="dialog" aria-controls="journalAdminModal" aria-expanded="false">+</button>
+            <button class="journal-control-button" id="clearSearch" type="button">clear search</button>
+          </div>
         </div>
         <p class="journal-status" id="journalStatus" role="status" aria-live="polite">loading entries...</p>
         <section class="journal-list" aria-label="Journal entries">
@@ -398,7 +400,6 @@
     </div>
   </section>
 
-  <button class="journal-admin-trigger" id="journalAdminTrigger" type="button" aria-haspopup="dialog" aria-controls="journalAdminModal" aria-expanded="false">+</button>
   <div class="journal-admin-overlay" id="journalAdminOverlay" aria-hidden="true"></div>
   <section class="journal-admin-modal" id="journalAdminModal" role="dialog" aria-modal="true" aria-labelledby="journalAdminPrompt" aria-hidden="true">
     <p id="journalAdminPrompt">hello me! password?</p>
