@@ -1,50 +1,228 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="icon" type="image/png" href="images/favicon.png">
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>journal — thismakesmesick</title>
   <link rel="stylesheet" href="style.css">
-</head>
-<body>
+  <style>
+    .journal-page .journal-list {
+      border: 1px solid rgba(0, 0, 0, 0.35);
+      padding: 12px;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.55);
+    }
 
+    .journal-page .journal-list ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .journal-page .journal-list li + li {
+      margin-top: 8px;
+    }
+
+    .journal-page .journal-entry-button {
+      width: 100%;
+      border: 1px solid transparent;
+      background: transparent;
+      padding: 8px;
+      text-align: left;
+      font: inherit;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    .journal-page .journal-entry-button:hover,
+    .journal-page .journal-entry-button:focus-visible {
+      border-color: rgba(0, 0, 0, 0.35);
+      background: #f3d6c4;
+      outline: none;
+    }
+
+    .journal-page .journal-entry-title {
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .journal-page .journal-entry-date {
+      font-size: 14px;
+      opacity: 0.75;
+    }
+
+    .journal-page .journal-modal-overlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 20px;
+      z-index: 1000;
+    }
+
+    .journal-page .journal-modal-overlay.is-open {
+      display: flex;
+    }
+
+    .journal-page .journal-modal {
+      width: min(720px, 100%);
+      max-height: 90vh;
+      overflow: auto;
+      border: 1px solid rgba(0, 0, 0, 0.35);
+      background: #fff;
+      padding: 16px;
+      position: relative;
+    }
+
+    .journal-page .journal-modal-close {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      border: 1px solid rgba(0, 0, 0, 0.35);
+      background: #f6f6f4;
+      font: inherit;
+      padding: 3px 8px;
+      cursor: pointer;
+    }
+
+    .journal-page .email-card {
+      border: 1px solid rgba(0, 0, 0, 0.25);
+      padding: 12px;
+      font-size: 18px;
+      line-height: 1.4;
+    }
+
+    .journal-page .email-row {
+      margin: 0 0 6px;
+    }
+
+    .journal-page .email-row strong {
+      display: inline-block;
+      width: 78px;
+      font-weight: bold;
+    }
+
+    .journal-page .email-body {
+      margin-top: 14px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(0, 0, 0, 0.2);
+      white-space: pre-line;
+    }
+
+    .journal-page .journal-entry-full {
+      display: none;
+    }
+  </style>
+</head>
+<body class="journal-page">
   <div class="layout">
- <div id="site-header"></div>
+    <div id="site-header"></div>
 
     <div class="page">
-
       <nav class="nav">
-     <div class="page journal-layout">
-
-  <!-- LEFT: entry log -->
-  <aside class="journal-log">
-    <ul>
-      <li><a href="#">2026-02-26 — today felt strange</a></li>
-      <li><a href="#">2026-02-24 — tired but okay</a></li>
-      <li><a href="#">2026-02-22 — nothing dramatic</a></li>
-      <li><a href="#">2026-02-20 — i miss something</a></li>
-      <!-- more later -->
-    </ul>
-  </aside>
-
-  <!-- CENTER: current entry -->
-  <main class="journal-current">
-    <section class="journal-entry">
-      <p>[current entry will go here]</p>
-    </section>
-  </main>
-
-  <!-- RIGHT: mood / extras -->
-  <aside class="journal-side">
-    <p>[mood tracker / embed later]</p>
-  </aside>
-
-</div>
-
+        <section class="journal-list" aria-label="Journal entries">
+          <ul>
+            <li>
+              <button class="journal-entry-button" type="button" data-entry-id="entry-2026-02-26">
+                <span class="journal-entry-title">today felt strange</span>
+                <span class="journal-entry-date">2026-02-26</span>
+              </button>
+            </li>
+            <li>
+              <button class="journal-entry-button" type="button" data-entry-id="entry-2026-02-24">
+                <span class="journal-entry-title">tired but okay</span>
+                <span class="journal-entry-date">2026-02-24</span>
+              </button>
+            </li>
+            <li>
+              <button class="journal-entry-button" type="button" data-entry-id="entry-2026-02-22">
+                <span class="journal-entry-title">nothing dramatic</span>
+                <span class="journal-entry-date">2026-02-22</span>
+              </button>
+            </li>
+            <li>
+              <button class="journal-entry-button" type="button" data-entry-id="entry-2026-02-20">
+                <span class="journal-entry-title">i miss something</span>
+                <span class="journal-entry-date">2026-02-20</span>
+              </button>
+            </li>
+          </ul>
+        </section>
+      </nav>
     </div>
-
   </div>
- <script>
+
+  <section class="journal-entry-full" id="entry-2026-02-26" aria-hidden="true">
+    <article class="email-card">
+      <p class="email-row"><strong>To:</strong> future me</p>
+      <p class="email-row"><strong>From:</strong> present me</p>
+      <p class="email-row"><strong>Subject:</strong> today felt strange</p>
+      <div class="email-body">
+        the day moved like static.
+        everything was normal but none of it felt anchored.
+
+        i kept expecting a call that never came,
+        and still checked my phone like it owed me something.
+      </div>
+    </article>
+  </section>
+
+  <section class="journal-entry-full" id="entry-2026-02-24" aria-hidden="true">
+    <article class="email-card">
+      <p class="email-row"><strong>To:</strong> sister</p>
+      <p class="email-row"><strong>From:</strong> me</p>
+      <p class="email-row"><strong>Subject:</strong> tired but okay</p>
+      <div class="email-body">
+        slept late again.
+        got through work by pretending the coffee was stronger than it was.
+
+        i made dinner anyway.
+        that counts as trying.
+      </div>
+    </article>
+  </section>
+
+  <section class="journal-entry-full" id="entry-2026-02-22" aria-hidden="true">
+    <article class="email-card">
+      <p class="email-row"><strong>To:</strong> nobody in particular</p>
+      <p class="email-row"><strong>From:</strong> me</p>
+      <p class="email-row"><strong>Subject:</strong> nothing dramatic</p>
+      <div class="email-body">
+        no disaster, no breakthrough.
+        just laundry, errands, and an evening walk.
+
+        it was ordinary,
+        which might be its own kind of mercy.
+      </div>
+    </article>
+  </section>
+
+  <section class="journal-entry-full" id="entry-2026-02-20" aria-hidden="true">
+    <article class="email-card">
+      <p class="email-row"><strong>To:</strong> the version of you i remember</p>
+      <p class="email-row"><strong>From:</strong> me</p>
+      <p class="email-row"><strong>Subject:</strong> i miss something</p>
+      <div class="email-body">
+        maybe it's not you i miss.
+        maybe it's the quiet certainty from then.
+
+        i keep reopening old messages
+        like they might explain how to move forward.
+      </div>
+    </article>
+  </section>
+
+  <div class="journal-modal-overlay" id="journalModalOverlay" role="dialog" aria-modal="true" aria-labelledby="journalModalTitle">
+    <div class="journal-modal">
+      <button class="journal-modal-close" id="journalModalClose" type="button" aria-label="Close journal entry">close</button>
+      <div id="journalModalContent"></div>
+    </div>
+  </div>
+
+  <script>
     document.addEventListener("DOMContentLoaded", () => {
       fetch("header.html")
         .then((response) => response.text())
@@ -54,8 +232,46 @@
             headerContainer.innerHTML = html;
           }
         });
+
+      const overlay = document.getElementById("journalModalOverlay");
+      const closeButton = document.getElementById("journalModalClose");
+      const modalContent = document.getElementById("journalModalContent");
+      const entryButtons = document.querySelectorAll(".journal-entry-button");
+
+      const closeModal = () => {
+        overlay.classList.remove("is-open");
+        modalContent.innerHTML = "";
+      };
+
+      entryButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const entry = document.getElementById(button.dataset.entryId);
+          if (!entry) {
+            return;
+          }
+
+          modalContent.innerHTML = entry.innerHTML;
+          const subjectRow = modalContent.querySelector(".email-row:nth-child(3)");
+          if (subjectRow) {
+            subjectRow.id = "journalModalTitle";
+          }
+          overlay.classList.add("is-open");
+        });
+      });
+
+      closeButton.addEventListener("click", closeModal);
+      overlay.addEventListener("click", (event) => {
+        if (event.target === overlay) {
+          closeModal();
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && overlay.classList.contains("is-open")) {
+          closeModal();
+        }
+      });
     });
   </script>
-
 </body>
 </html>
