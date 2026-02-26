@@ -132,3 +132,20 @@ a {
   grid-template-columns: 180px 1fr 180px;
   gap: 16px;
 }
+.journal-log {
+  border: 1px solid rgba(0,0,0,0.35);
+  padding: 8px;
+  max-height: 70vh;
+  overflow-y: auto;
+  font-size: 14px;
+}
+
+.journal-log ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.journal-log li {
+  margin-bottom: 8px;
+}
