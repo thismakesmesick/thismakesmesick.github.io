@@ -466,7 +466,7 @@ bringToFront(popup);
         closeButton.addEventListener("click", () => closePopup(popup));
         makeDraggable(popup, header);
 
-        if (openCount % 10 === 0) {
+        if (openCount % 4 === 0) {
           showInterrupt();
         }
       };
