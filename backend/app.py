@@ -3,6 +3,7 @@ import sqlite3
 from functools import wraps
 
 from flask import Flask, g, jsonify, render_template_string, request
+from flask_cors import CORS
 
 app = Flask(__name__)
 
@@ -14,14 +15,6 @@ def home():
 
 app.config["DATABASE"] = os.getenv("JOURNAL_DB_PATH", "/tmp/journal.db")
 app.config["WRITE_API_KEY"] = os.getenv("WRITE_API_KEY", "change-me")
-
-
-@app.after_request
-def add_cors_headers(response):
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type, X-API-Key"
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
-    return response
 
 
 ADMIN_COMPOSE_TEMPLATE = """
