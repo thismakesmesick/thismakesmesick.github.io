@@ -9,17 +9,7 @@
 <body>
 
   <div class="layout">
-
-    <header class="status-bar">
-      <div class="marquee">
-        <span>
-          ♫ now playing:
-          <a href="https://www.youtube.com/" target="_blank">something</a>
-          · baked status: unknown
-          · note: journal mode
-        </span>
-      </div>
-    </header>
+ <div id="site-header"></div>
 
     <div class="page">
 
@@ -54,6 +44,18 @@
     </div>
 
   </div>
+ <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      fetch("header.html")
+        .then((response) => response.text())
+        .then((html) => {
+          const headerContainer = document.getElementById("site-header");
+          if (headerContainer) {
+            headerContainer.innerHTML = html;
+          }
+        });
+    });
+  </script>
 
 </body>
 </html>
