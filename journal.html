@@ -14,6 +14,37 @@
       flex-wrap: wrap;
     }
 
+    .journal-page .journal-search {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .journal-page .journal-search input {
+      border: 1px solid rgba(0, 0, 0, 0.35);
+      background: #fff;
+      padding: 6px 10px;
+      font: inherit;
+      color: inherit;
+    }
+
+    .journal-page .journal-search-date {
+      min-width: 165px;
+    }
+
+    .journal-page .journal-search-keyword {
+      min-width: 220px;
+      flex: 1 1 220px;
+    }
+
+    .journal-page .journal-status {
+      margin: 0 0 8px;
+      font-size: 14px;
+      opacity: 0.75;
+    }
+
     .journal-page .journal-control-button {
       border: 1px solid rgba(0, 0, 0, 0.35);
       background: #f6f6f4;
@@ -237,97 +268,27 @@
           <a class="journal-control-button" href="index.html">back</a>
           <button class="journal-control-button" id="clearAllPopups" type="button">clear all popups</button>
         </div>
+        <div class="journal-search" aria-label="Search journal entries">
+          <input class="journal-search-date" id="searchDate" type="date" aria-label="Search by date">
+          <input class="journal-search-keyword" id="searchKeyword" type="search" placeholder="search by keyword" aria-label="Search by keyword">
+          <button class="journal-control-button" id="clearSearch" type="button">clear search</button>
+        </div>
+        <p class="journal-status" id="journalStatus" role="status" aria-live="polite">loading entries...</p>
         <section class="journal-list" aria-label="Journal entries">
-          <ul>
-            <li>
-              <button class="journal-entry-button" type="button" data-entry-id="entry-2026-02-26">
-                <span class="journal-entry-title">today felt strange</span>
-                <span class="journal-entry-date">2026-02-26</span>
-              </button>
-            </li>
-            <li>
-              <button class="journal-entry-button" type="button" data-entry-id="entry-2026-02-24">
-                <span class="journal-entry-title">tired but okay</span>
-                <span class="journal-entry-date">2026-02-24</span>
-              </button>
-            </li>
-            <li>
-              <button class="journal-entry-button" type="button" data-entry-id="entry-2026-02-22">
-                <span class="journal-entry-title">nothing dramatic</span>
-                <span class="journal-entry-date">2026-02-22</span>
-              </button>
-            </li>
-            <li>
-              <button class="journal-entry-button" type="button" data-entry-id="entry-2026-02-20">
-                <span class="journal-entry-title">i miss something</span>
-                <span class="journal-entry-date">2026-02-20</span>
-              </button>
-            </li>
-          </ul>
+          <ul id="journalEntries"></ul>
         </section>
       </nav>
     </div>
   </div>
 
-  <section class="journal-entry-full" id="entry-2026-02-26" aria-hidden="true">
+  <template id="entryTemplate">
     <article class="email-card">
-      <p class="email-row"><strong>To:</strong> future me</p>
-      <p class="email-row"><strong>From:</strong> present me</p>
-      <p class="email-row"><strong>Subject:</strong> today felt strange</p>
-      <div class="email-body">
-        the day moved like static.
-        everything was normal but none of it felt anchored.
-
-        i kept expecting a call that never came,
-        and still checked my phone like it owed me something.
-      </div>
+      <p class="email-row"><strong>To:</strong> <span data-field="to"></span></p>
+      <p class="email-row"><strong>From:</strong> <span data-field="from"></span></p>
+      <p class="email-row"><strong>Subject:</strong> <span data-field="subject"></span></p>
+      <div class="email-body" data-field="body"></div>
     </article>
-  </section>
-
-  <section class="journal-entry-full" id="entry-2026-02-24" aria-hidden="true">
-    <article class="email-card">
-      <p class="email-row"><strong>To:</strong> sister</p>
-      <p class="email-row"><strong>From:</strong> me</p>
-      <p class="email-row"><strong>Subject:</strong> tired but okay</p>
-      <div class="email-body">
-        slept late again.
-        got through work by pretending the coffee was stronger than it was.
-
-        i made dinner anyway.
-        that counts as trying.
-      </div>
-    </article>
-  </section>
-
-  <section class="journal-entry-full" id="entry-2026-02-22" aria-hidden="true">
-    <article class="email-card">
-      <p class="email-row"><strong>To:</strong> nobody in particular</p>
-      <p class="email-row"><strong>From:</strong> me</p>
-      <p class="email-row"><strong>Subject:</strong> nothing dramatic</p>
-      <div class="email-body">
-        no disaster, no breakthrough.
-        just laundry, errands, and an evening walk.
-
-        it was ordinary,
-        which might be its own kind of mercy.
-      </div>
-    </article>
-  </section>
-
-  <section class="journal-entry-full" id="entry-2026-02-20" aria-hidden="true">
-    <article class="email-card">
-      <p class="email-row"><strong>To:</strong> the version of you i remember</p>
-      <p class="email-row"><strong>From:</strong> me</p>
-      <p class="email-row"><strong>Subject:</strong> i miss something</p>
-      <div class="email-body">
-        maybe it's not you i miss.
-        maybe it's the quiet certainty from then.
-
-        i keep reopening old messages
-        like they might explain how to move forward.
-      </div>
-    </article>
-  </section>
+  </template>
 
   <div class="journal-window-layer" id="journalWindowLayer" aria-live="polite"></div>
   <div class="journal-interrupt-overlay" id="journalInterruptOverlay" aria-hidden="true"></div>
@@ -351,14 +312,20 @@
           }
         });
 
+      const API_BASE_URL = "https://<your-backend>/api";
       const windowLayer = document.getElementById("journalWindowLayer");
       const interruptOverlay = document.getElementById("journalInterruptOverlay");
       const interruptModal = document.getElementById("journalInterruptModal");
       const interruptMessage = document.getElementById("journalInterruptMessage");
       const continueButton = document.getElementById("journalInterruptContinue");
       const crashButton = document.getElementById("journalInterruptCrash");
-      const entryButtons = document.querySelectorAll(".journal-entry-button");
       const clearAllButton = document.getElementById("clearAllPopups");
+      const clearSearchButton = document.getElementById("clearSearch");
+      const dateInput = document.getElementById("searchDate");
+      const keywordInput = document.getElementById("searchKeyword");
+      const entriesList = document.getElementById("journalEntries");
+      const statusText = document.getElementById("journalStatus");
+      const entryTemplate = document.getElementById("entryTemplate");
       let zIndexCounter = 2000;
       let openCount = 0;
       let interruptVisible = false;
@@ -441,7 +408,19 @@
         handle.addEventListener("pointerdown", onPointerDown);
       };
 
-      const createPopup = (entry, titleText) => {
+      const buildEntryHtml = (entry) => {
+        const fragment = entryTemplate.content.cloneNode(true);
+        fragment.querySelector('[data-field="to"]').textContent = entry.to_name || "";
+        fragment.querySelector('[data-field="from"]').textContent = entry.from_name || "";
+        fragment.querySelector('[data-field="subject"]').textContent = entry.subject || "";
+        fragment.querySelector('[data-field="body"]').textContent = entry.body || "";
+
+        const wrapper = document.createElement("div");
+        wrapper.appendChild(fragment);
+        return wrapper.innerHTML;
+      };
+
+      const createPopup = (entryHtml, titleText) => {
         openCount += 1;
 
         const popup = document.createElement("article");
@@ -462,7 +441,7 @@
 
         const body = document.createElement("div");
         body.className = "journal-window-body";
-        body.innerHTML = entry.innerHTML;
+        body.innerHTML = entryHtml;
 
         header.appendChild(title);
         header.appendChild(closeButton);
@@ -484,27 +463,95 @@
         }
       };
 
-      entryButtons.forEach((button) => {
-        button.addEventListener("click", () => {
-          if (interruptVisible) {
-            return;
-          }
+      const renderEntries = (entries) => {
+        entriesList.innerHTML = "";
 
-          const entry = document.getElementById(button.dataset.entryId);
-          if (!entry) {
-            return;
-          }
+        if (!entries.length) {
+          const noResults = document.createElement("li");
+          noResults.textContent = "no entries found.";
+          entriesList.appendChild(noResults);
+          return;
+        }
 
-          const titleText = button.querySelector(".journal-entry-title")?.textContent?.trim();
-          createPopup(entry, titleText);
+        entries.forEach((entry) => {
+          const listItem = document.createElement("li");
+          const button = document.createElement("button");
+          button.className = "journal-entry-button";
+          button.type = "button";
+          button.dataset.entryId = String(entry.id);
+          button.innerHTML = `
+            <span class="journal-entry-title"></span>
+            <span class="journal-entry-date"></span>
+          `;
+          button.querySelector(".journal-entry-title").textContent = entry.subject || "untitled entry";
+          button.querySelector(".journal-entry-date").textContent = entry.entry_date || "";
+
+          button.addEventListener("click", async () => {
+            if (interruptVisible) {
+              return;
+            }
+
+            try {
+              const response = await fetch(`${API_BASE_URL}/entries/${encodeURIComponent(entry.id)}`);
+              if (!response.ok) {
+                throw new Error("could not load entry details");
+              }
+
+              const fullEntry = await response.json();
+              const entryHtml = buildEntryHtml(fullEntry);
+              createPopup(entryHtml, fullEntry.subject || "journal entry");
+            } catch (error) {
+              statusText.textContent = "failed to load entry. try again.";
+            }
+          });
+
+          listItem.appendChild(button);
+          entriesList.appendChild(listItem);
         });
-      });
+      };
+
+      const fetchEntries = async () => {
+        const dateValue = dateInput.value;
+        const keywordValue = keywordInput.value.trim();
+        const hasSearch = Boolean(dateValue || keywordValue);
+
+        const endpoint = hasSearch
+          ? `${API_BASE_URL}/search?date=${encodeURIComponent(dateValue)}&keyword=${encodeURIComponent(keywordValue)}`
+          : `${API_BASE_URL}/entries`;
+
+        statusText.textContent = "loading entries...";
+
+        try {
+          const response = await fetch(endpoint);
+          if (!response.ok) {
+            throw new Error("failed to fetch entries");
+          }
+
+          const entries = await response.json();
+          renderEntries(entries);
+          statusText.textContent = hasSearch
+            ? `showing ${entries.length} matching entr${entries.length === 1 ? "y" : "ies"}.`
+            : `showing ${entries.length} entr${entries.length === 1 ? "y" : "ies"}.`;
+        } catch (error) {
+          entriesList.innerHTML = "";
+          statusText.textContent = "could not connect to journal backend.";
+        }
+      };
 
       clearAllButton.addEventListener("click", clearAllPopups);
       continueButton.addEventListener("click", hideInterrupt);
       crashButton.addEventListener("click", () => {
         window.location.href = "index.html";
       });
+
+      clearSearchButton.addEventListener("click", () => {
+        dateInput.value = "";
+        keywordInput.value = "";
+        fetchEntries();
+      });
+
+      dateInput.addEventListener("change", fetchEntries);
+      keywordInput.addEventListener("input", fetchEntries);
 
       document.addEventListener("keydown", (event) => {
         if (interruptVisible) {
@@ -519,6 +566,8 @@
         const topPopup = openPopups[openPopups.length - 1];
         closePopup(topPopup);
       });
+
+      fetchEntries();
     });
   </script>
 </body>
