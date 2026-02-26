@@ -7,6 +7,30 @@
   <title>journal — thismakesmesick</title>
   <link rel="stylesheet" href="style.css">
   <style>
+    .journal-page .journal-controls {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .journal-page .journal-control-button {
+      border: 1px solid rgba(0, 0, 0, 0.35);
+      background: #f6f6f4;
+      padding: 6px 10px;
+      font: inherit;
+      color: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      display: inline-block;
+    }
+
+    .journal-page .journal-control-button:hover,
+    .journal-page .journal-control-button:focus-visible {
+      background: #f3d6c4;
+      outline: none;
+    }
+
     .journal-page .journal-list {
       border: 1px solid rgba(0, 0, 0, 0.35);
       padding: 12px;
@@ -52,40 +76,67 @@
       opacity: 0.75;
     }
 
-    .journal-page .journal-modal-overlay {
+    .journal-page .journal-window-layer {
       position: fixed;
       inset: 0;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0, 0, 0, 0.25);
-      padding: 20px;
+      pointer-events: none;
       z-index: 1000;
     }
 
-    .journal-page .journal-modal-overlay.is-open {
-      display: flex;
-    }
-
-    .journal-page .journal-modal {
-      width: min(720px, 100%);
-      max-height: 90vh;
-      overflow: auto;
+    .journal-page .journal-window {
+      width: min(720px, calc(100vw - 40px));
+      max-height: min(88vh, 680px);
       border: 1px solid rgba(0, 0, 0, 0.35);
       background: #fff;
-      padding: 16px;
-      position: relative;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      position: absolute;
+      pointer-events: auto;
+      overflow: hidden;
     }
 
-    .journal-page .journal-modal-close {
-      position: absolute;
-      top: 8px;
-      right: 8px;
+    .journal-page .journal-window-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 10px;
+      background: #f6f6f4;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+      cursor: grab;
+      user-select: none;
+    }
+
+    .journal-page .journal-window-header:active {
+      cursor: grabbing;
+    }
+
+    .journal-page .journal-window-title {
+      margin: 0;
+      font-size: 16px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .journal-page .journal-window-close {
       border: 1px solid rgba(0, 0, 0, 0.35);
       background: #f6f6f4;
       font: inherit;
       padding: 3px 8px;
       cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .journal-page .journal-window-close:hover,
+    .journal-page .journal-window-close:focus-visible {
+      background: #f3d6c4;
+      outline: none;
+    }
+
+    .journal-page .journal-window-body {
+      max-height: calc(min(88vh, 680px) - 52px);
+      overflow: auto;
+      padding: 16px;
     }
 
     .journal-page .email-card {
@@ -123,6 +174,10 @@
 
     <div class="page">
       <nav class="nav">
+        <div class="journal-controls">
+          <a class="journal-control-button" href="index.html">back</a>
+          <button class="journal-control-button" id="clearAllPopups" type="button">clear all popups</button>
+        </div>
         <section class="journal-list" aria-label="Journal entries">
           <ul>
             <li>
@@ -215,12 +270,7 @@
     </article>
   </section>
 
-  <div class="journal-modal-overlay" id="journalModalOverlay" role="dialog" aria-modal="true" aria-labelledby="journalModalTitle">
-    <div class="journal-modal">
-      <button class="journal-modal-close" id="journalModalClose" type="button" aria-label="Close journal entry">close</button>
-      <div id="journalModalContent"></div>
-    </div>
-  </div>
+  <div class="journal-window-layer" id="journalWindowLayer" aria-live="polite"></div>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -233,14 +283,101 @@
           }
         });
 
-      const overlay = document.getElementById("journalModalOverlay");
-      const closeButton = document.getElementById("journalModalClose");
-      const modalContent = document.getElementById("journalModalContent");
+      const windowLayer = document.getElementById("journalWindowLayer");
       const entryButtons = document.querySelectorAll(".journal-entry-button");
+      const clearAllButton = document.getElementById("clearAllPopups");
+      let zIndexCounter = 2000;
+      let openCount = 0;
 
-      const closeModal = () => {
-        overlay.classList.remove("is-open");
-        modalContent.innerHTML = "";
+      const bringToFront = (popup) => {
+        zIndexCounter += 1;
+        popup.style.zIndex = String(zIndexCounter);
+      };
+
+      const closePopup = (popup) => {
+        if (!popup) {
+          return;
+        }
+
+        popup.remove();
+      };
+
+      const clearAllPopups = () => {
+        windowLayer.innerHTML = "";
+      };
+
+      const makeDraggable = (popup, handle) => {
+        const onPointerDown = (event) => {
+          if (event.button !== 0) {
+            return;
+          }
+
+          event.preventDefault();
+          bringToFront(popup);
+
+          const popupRect = popup.getBoundingClientRect();
+          const shiftX = event.clientX - popupRect.left;
+          const shiftY = event.clientY - popupRect.top;
+
+          const onPointerMove = (moveEvent) => {
+            const maxLeft = Math.max(20, window.innerWidth - popup.offsetWidth - 20);
+            const maxTop = Math.max(20, window.innerHeight - popup.offsetHeight - 20);
+            const nextLeft = Math.min(Math.max(20, moveEvent.clientX - shiftX), maxLeft);
+            const nextTop = Math.min(Math.max(20, moveEvent.clientY - shiftY), maxTop);
+
+            popup.style.left = `${nextLeft}px`;
+            popup.style.top = `${nextTop}px`;
+          };
+
+          const onPointerUp = () => {
+            document.removeEventListener("pointermove", onPointerMove);
+            document.removeEventListener("pointerup", onPointerUp);
+          };
+
+          document.addEventListener("pointermove", onPointerMove);
+          document.addEventListener("pointerup", onPointerUp);
+        };
+
+        handle.addEventListener("pointerdown", onPointerDown);
+      };
+
+      const createPopup = (entry, titleText) => {
+        openCount += 1;
+
+        const popup = document.createElement("article");
+        popup.className = "journal-window";
+
+        const header = document.createElement("div");
+        header.className = "journal-window-header";
+
+        const title = document.createElement("p");
+        title.className = "journal-window-title";
+        title.textContent = titleText || "journal entry";
+
+        const closeButton = document.createElement("button");
+        closeButton.type = "button";
+        closeButton.className = "journal-window-close";
+        closeButton.textContent = "close";
+        closeButton.setAttribute("aria-label", "Close this journal entry popup");
+
+        const body = document.createElement("div");
+        body.className = "journal-window-body";
+        body.innerHTML = entry.innerHTML;
+
+        header.appendChild(title);
+        header.appendChild(closeButton);
+        popup.appendChild(header);
+        popup.appendChild(body);
+        windowLayer.appendChild(popup);
+
+        const offset = ((openCount - 1) % 8) * 24;
+        popup.style.left = `${60 + offset}px`;
+        popup.style.top = `${80 + offset}px`;
+        bringToFront(popup);
+
+        popup.addEventListener("pointerdown", () => bringToFront(popup));
+        closeButton.addEventListener("click", () => closePopup(popup));
+        makeDraggable(popup, header);
       };
 
       entryButtons.forEach((button) => {
@@ -250,26 +387,21 @@
             return;
           }
 
-          modalContent.innerHTML = entry.innerHTML;
-          const subjectRow = modalContent.querySelector(".email-row:nth-child(3)");
-          if (subjectRow) {
-            subjectRow.id = "journalModalTitle";
-          }
-          overlay.classList.add("is-open");
+          const titleText = button.querySelector(".journal-entry-title")?.textContent?.trim();
+          createPopup(entry, titleText);
         });
       });
 
-      closeButton.addEventListener("click", closeModal);
-      overlay.addEventListener("click", (event) => {
-        if (event.target === overlay) {
-          closeModal();
-        }
-      });
+      clearAllButton.addEventListener("click", clearAllPopups);
 
       document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape" && overlay.classList.contains("is-open")) {
-          closeModal();
+        if (event.key !== "Escape") {
+          return;
         }
+
+        const openPopups = windowLayer.querySelectorAll(".journal-window");
+        const topPopup = openPopups[openPopups.length - 1];
+        closePopup(topPopup);
       });
     });
   </script>
