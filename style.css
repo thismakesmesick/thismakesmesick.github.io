@@ -127,12 +127,16 @@ a {
 }
 /* journal layout */
 
-.journal-layout {
+journal-page .layout {
+  width: min(1100px, calc(100% - 24px));
+}
+
+.journal-page .journal-layout {
   display: grid;
-  grid-template-columns: 180px 1fr 180px;
+  grid-template-columns: 1fr;
   gap: 16px;
 }
-.journal-log {
+.journal-page .journal-log {
   border: 1px solid rgba(0,0,0,0.35);
   padding: 8px;
   max-height: 70vh;
@@ -140,23 +144,30 @@ a {
   font-size: 14px;
 }
 
-.journal-log ul {
+.journal-page .journal-log ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.journal-log li {
+.journal-page .journal-log li {
   margin-bottom: 8px;
 }
-.journal-current {
+.journal-page .journal-current {
   border: 1px solid rgba(0,0,0,0.35);
   padding: 12px;
   min-height: 60vh;
 }
 
-.journal-side {
+.journal-page .journal-side {
   border: 1px solid rgba(0,0,0,0.35);
   padding: 8px;
   font-size: 14px;
+}
+
+@media (min-width: 960px) {
+  .journal-page .journal-layout {
+    grid-template-columns: 220px minmax(0, 1fr) 220px;
+    align-items: start;
+  }
 }
