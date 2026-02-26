@@ -2,10 +2,14 @@ import os
 import sqlite3
 from functools import wraps
 from flask import Flask, g, jsonify, request
+from flask_cors import CORS
 
 app = Flask(__name__)
-app.config["DATABASE"] = os.getenv("JOURNAL_DB_PATH", os.path.join(os.path.dirname(__file__), "journal.db"))
+app.config["DATABASE"] = os.getenv("JOURNAL_DB_PATH", "/tmp/journal.db")
 app.config["WRITE_API_KEY"] = os.getenv("WRITE_API_KEY", "change-me")
+
+cors_origins = [origin.strip() for origin in os.getenv("CORS_ORIGINS", "*").split(",") if origin.strip()]
+CORS(app, resources={r"/api/*": {"origins": cors_origins or "*"}})
 
 
 def get_db():
@@ -145,6 +149,7 @@ def update_or_delete_entry(entry_id):
     return jsonify({"error": "write endpoints reserved for backend admin tooling", "id": entry_id}), 501
 
 
+init_db()
+
 if __name__ == "__main__":
-    init_db()
     app.run(host="0.0.0.0", port=int(os.getenv("PORT", "5000")))
