@@ -5,6 +5,9 @@ from flask import Flask, g, jsonify, request
 from flask_cors import CORS
 
 app = Flask(__name__)
+@app.route("/")
+def home():
+    return {"status": "Journal API running"}
 app.config["DATABASE"] = os.getenv("JOURNAL_DB_PATH", "/tmp/journal.db")
 app.config["WRITE_API_KEY"] = os.getenv("WRITE_API_KEY", "change-me")
 
